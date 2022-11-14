@@ -15,13 +15,12 @@ echo SLURM_NNODES: $SLURM_NNODES
 echo SLURM_MEM_PER_CPU: $SLURM_MEM_PER_CPU
 
 ########## MODULE LOADING ############
-#module load cesga/2020 gcc/system openmpi/4.0.5 dask/2021.3.0-python-3.6.12 ->Not Working in FT3
 #module load cesga/2020 gcc/system openmpi/4.0.5_ft3 dask/2021.3.0-python-3.6.12 #-> WORKS
 
-#module load cesga/2020 gcc/system openmpi/4.0.5 dask/2021.6.0 ->Not Working in FT3
 # module load cesga/2020 gcc/system openmpi/4.0.5_ft3 dask/2021.6.0 #-> WORKS
 
 module load cesga/2020 gcc/system openmpi/4.0.5_ft3_cuda dask/2022.2.0
+
 #module load miniconda3
 #conda activate qiskit_dask
 #####################################
