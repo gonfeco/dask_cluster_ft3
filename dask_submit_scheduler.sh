@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -n 4 # Number of tasks 
+#SBATCH -n 1 # Number of tasks 
 #SBATCH -c 1 # Total number of core for one task
 #SBATCH --mem-per-cpu=3G
 #SBATCH -t 00:10:00
@@ -25,11 +25,14 @@ module load cesga/2020 gcc/system openmpi/4.0.5_ft3_cuda dask/2022.2.0
 #conda activate qiskit_dask
 #####################################
 
+rm -f scheduler_info.txt
+rm -f ssh_command.txt
+
 srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU  -l \
-    python ./dask_cluster.py -local $LUSTRE_SCRATCH --worker
+    python ./dask_cluster.py -local $LUSTRE_SCRATCH --scheduler
 
 #Reserved Ports Version
 #srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK \
 #    --mem-per-cpu $SLURM_MEM_PER_CPU \
 #	--resv-ports=$SLURM_NTASKS -l \
-#    python ./dask_cluster_resvports.py -local $LUSTRE_SCRATCH --worker
+#    python ./dask_cluster_resvports.py -local $LUSTRE_SCRATCH --scheduler

@@ -30,5 +30,12 @@ rm -f ssh_command.txt
 
 
 
-srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU  -l \
-    python ./dask_cluster.py -local $LUSTRE_SCRATCH --dask_cluster
+#srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK \
+#    --mem-per-cpu $SLURM_MEM_PER_CPU -l \
+#    python ./dask_cluster.py -local $LUSTRE_SCRATCH --dask_cluster
+
+#Reserved Ports Version
+srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK \
+    --mem-per-cpu $SLURM_MEM_PER_CPU \
+	--resv-ports=$SLURM_NTASKS -l \
+    python ./dask_cluster_resvports.py -local $LUSTRE_SCRATCH --dask_cluster
