@@ -108,7 +108,7 @@ def create_ssh_file(json_file_name):
     print(tira_ssh)
     return tira_ssh
 
-def create_dask_client(json_file_name):
+def create_dask_client(json_file_name="./scheduler_info.json"):
     #Test if json scheduler exist
     from distributed import Client
     json_file_name = test_scheduler_file(json_file_name)
@@ -187,7 +187,7 @@ if __name__ == "__main__":
         f.close()
 
     if FLAGS.client:
-        dask_client = create_dask_client("/home/cesga/gferro/dfailde/dask_cluster/scheduler_info.json")
+        dask_client = create_dask_client("./scheduler_info.json")
         print(dask_client)
 
     if FLAGS.dask_cluster:
