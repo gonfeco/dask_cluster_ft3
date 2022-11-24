@@ -66,14 +66,13 @@ def launch_worker(scheduler_file=None, scheduler_address=None, local_folder='/tm
     return process
 
 def test_scheduler_file(json_file_name):
-    stop = True
+    isfile = False
     counter = 0
-    while stop:
-        try:
-            json_file = open(json_file_name)
-            stop = False
-            return json_file
-        except FileNotFoundError:
+    while not isfile:
+        isfile = os.path.isfile(json_file_name)
+        if isfile:
+            return json_file_name
+        else:
             print('NO ESTA!!')
             time.sleep(5)
             counter = counter + 1
@@ -81,7 +80,11 @@ def test_scheduler_file(json_file_name):
                 raise FileNotFoundError('Not scheduler json!!')
 
 def create_ssh_file(json_file_name):
-    json_file = test_scheduler_file(json_file_name)
+    #Test if file exists
+    json_file_name = test_scheduler_file(json_file_name)
+    #open file
+    json_file = open(json_file_name)
+    #load json in memory
     data = json.load(json_file)
     scheduler_addrs = data['address']
     scheduler_addrs = scheduler_addrs.replace('tcp://', '')
@@ -104,6 +107,13 @@ def create_ssh_file(json_file_name):
     )
     print(tira_ssh)
     return tira_ssh
+
+def create_dask_client(json_file_name):
+    #Test if json scheduler exist
+    from distributed import Client
+    json_file_name = test_scheduler_file(json_file_name)
+    dask_client = Client(scheduler_file=json_file_name)
+    return dask_client
 
 if __name__ == "__main__":
     FLAGS = None
@@ -144,6 +154,13 @@ if __name__ == "__main__":
         default=None,
         help="Scheduler IP. ex: tcp://10.120.10.7:8085",
     )
+    parser.add_argument(
+        "--client",
+        dest="client",
+        default=False,
+        action="store_true",
+        help="Get the dask client",
+    )
     FLAGS, unparsed = parser.parse_known_args()
 
     if FLAGS.scheduler:
@@ -168,6 +185,10 @@ if __name__ == "__main__":
         f = open("./ssh_command.txt", "w")
         f.write(ssh_file)
         f.close()
+
+    if FLAGS.client:
+        dask_client = create_dask_client("/home/cesga/gferro/dfailde/dask_cluster/scheduler_info.json")
+        print(dask_client)
 
     if FLAGS.dask_cluster:
         try:
