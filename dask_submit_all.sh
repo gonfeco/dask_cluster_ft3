@@ -41,7 +41,8 @@ echo 'TASKS_FOR_CLUSTER= '$TASKS_FOR_CLUSTER
 #    python ./inc_dask.py &
 
 #Reserved Ports Version
-srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK \
+srun -n $SLURM_NTASKS \
+    -c $SLURM_CPUS_PER_TASK \
     --mem-per-cpu $SLURM_MEM_PER_CPU \
 	--resv-ports=$TASKS_FOR_CLUSTER -l \
     ./wraper.sh

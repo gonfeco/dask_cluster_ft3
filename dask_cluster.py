@@ -163,6 +163,7 @@ def launch_worker(
     return process
 
 def test_scheduler_file(json_file_name="./scheduler_info.json"):
+    time.sleep(5)
     isfile = False
     counter = 0
     while not isfile:
@@ -208,7 +209,7 @@ def create_ssh_file(json_file_name):
     f_pointer.close()
     return tira_ssh
 
-def create_dask_client(json_file_name):
+def create_dask_client(json_file_name="./scheduler_info.json"):
     #Test if json scheduler exist
     from distributed import Client
     json_file_name = test_scheduler_file(json_file_name)
@@ -265,13 +266,13 @@ if __name__ == "__main__":
         default=None,#"./scheduler_info.json",
         help="File name for json file with the scheduler info",
     )
-    parser.add_argument(
-        "--client",
-        dest="client",
-        default=False,
-        action="store_true",
-        help="Get the dask client",
-    )
+    #parser.add_argument(
+    #    "--client",
+    #    dest="client",
+    #    default=False,
+    #    action="store_true",
+    #    help="Get the dask client",
+    #)
     parser.add_argument(
         '-preload',
         dest="preload",
@@ -297,9 +298,9 @@ if __name__ == "__main__":
     if FLAGS.ssh_file:
         ssh_file = create_ssh_file(FLAGS.scheduler_file)
 
-    if FLAGS.client:
-        dask_client = create_dask_client(FLAGS.scheduler_file)
-        print(dask_client)
+    #if FLAGS.client:
+    #    dask_client = create_dask_client(FLAGS.scheduler_file)
+    #    print(dask_client)
 
     if FLAGS.dask_cluster:
         #try:

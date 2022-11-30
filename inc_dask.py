@@ -6,7 +6,9 @@ from time import sleep, time
 from dask_cluster import create_dask_client
 
 #Aqui intentamos conectarnos al cliente
-client = create_dask_client()
+info = "./scheduler_info.json"
+
+client = create_dask_client(info)
 
 
 def inc(x):
