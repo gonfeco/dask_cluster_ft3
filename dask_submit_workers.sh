@@ -23,10 +23,17 @@ module load cesga/2020 gcc/system openmpi/4.0.5_ft3_cuda dask/2022.2.0
 
 #module load miniconda3
 #conda activate qiskit_dask
-#####################################
+######################################
 
-srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU  -l \
-    python ./dask_cluster.py -local $LUSTRE_SCRATCH --worker
+
+#Cambia el fichero con la info del scheduler si fuera menester
+SCHED_FILE="./scheduler_info.json"
+
+srun -n $SLURM_NTASKS \
+    -c $SLURM_CPUS_PER_TASK \
+    --mem-per-cpu $SLURM_MEM_PER_CPU \
+	--resv-ports=$SLURM_NTASKS -l \
+    python ./dask_cluster.py -local $LUSTRE_SCRATCH --worker -scheduler_file $SCHED_FILE
 
 #Reserved Ports Version
 #srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK \

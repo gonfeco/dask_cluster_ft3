@@ -3,7 +3,7 @@
 #SBATCH -n 1 # Number of tasks 
 #SBATCH -c 1 # Total number of core for one task
 #SBATCH --mem-per-cpu=3G
-#SBATCH -t 00:10:00
+#SBATCH -t 00:20:00
 
 # SBATCH --ntasks-per-node=4
 
@@ -28,11 +28,13 @@ module load cesga/2020 gcc/system openmpi/4.0.5_ft3_cuda dask/2022.2.0
 rm -f scheduler_info.txt
 rm -f ssh_command.txt
 
-srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU  -l \
+srun -n $SLURM_NTASKS \
+    -c $SLURM_CPUS_PER_TASK \
+    --mem-per-cpu $SLURM_MEM_PER_CPU \
+	--resv-ports=$SLURM_NTASKS -l \
     python ./dask_cluster.py -local $LUSTRE_SCRATCH --scheduler
 
 #Reserved Ports Version
 #srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK \
 #    --mem-per-cpu $SLURM_MEM_PER_CPU \
-#	--resv-ports=$SLURM_NTASKS -l \
 #    python ./dask_cluster_resvports.py -local $LUSTRE_SCRATCH --scheduler

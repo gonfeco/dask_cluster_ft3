@@ -29,13 +29,15 @@ rm -f scheduler_info.txt
 rm -f ssh_command.txt
 
 
+#SCHED_FILE="./zalo.json"
 
 #srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK \
 #    --mem-per-cpu $SLURM_MEM_PER_CPU -l \
 #    python ./dask_cluster.py -local $LUSTRE_SCRATCH --dask_cluster
 
 #Reserved Ports Version
-srun -n $SLURM_NTASKS -c $SLURM_CPUS_PER_TASK \
+srun -n $SLURM_NTASKS \
+    -c $SLURM_CPUS_PER_TASK \
     --mem-per-cpu $SLURM_MEM_PER_CPU \
 	--resv-ports=$SLURM_NTASKS -l \
-    python ./dask_cluster_resvports.py -local $LUSTRE_SCRATCH --dask_cluster
+    python ./dask_cluster.py -local $LUSTRE_SCRATCH --dask_cluster #-scheduler_file $SCHED_FILE
