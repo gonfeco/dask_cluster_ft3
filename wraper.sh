@@ -4,16 +4,21 @@ echo SLURM_PROCID: $SLURM_PROCID
 
 TASKFORPYTHON=$((SLURM_NTASKS-1))
 
-SCHED_FILE=/home/cesga/gferro/dfailde/dask_cluster/zalo.json
-echo $SCHED_FILE
+#SCHED_FILE=./zalo.json
+#echo $SCHED_FILE
 
 if [ $SLURM_PROCID == $TASKFORPYTHON ];
 then
     echo "EXECUTING YOUR PYTHON PROGRAM"
-    #Para que monte el cluster antes de lanzar nada
-    sleep 2
+    #Tiempo para que el cluster de dask se monte antes de empezar a lanzar calculos
+    sleep 5
     python ./inc_dask.py 
 else
     echo "RAISING THE DASK CLUSTER"
-    python ./dask_cluster.py -local $LUSTRE_SCRATCH --dask_cluster #-scheduler_file $SCHED_FILE
+    python ./dask_cluster.py \
+        -local $LUSTRE_SCRATCH \
+        --dask_cluster \
+        #-scheduler_file $SCHED_FILE \
+        #-preload  ./PreLoad.py
+
 fi
