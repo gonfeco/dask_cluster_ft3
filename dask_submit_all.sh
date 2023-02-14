@@ -7,6 +7,7 @@
 
 # SBATCH --ntasks-per-node=4
 
+MEMORY_PER_TASK=$(( $SLURM_CPUS_PER_TASK*$SLURM_MEM_PER_CPU ))
 # Number of tasks 
 echo SLURM_NTASKS: $SLURM_NTASKS  
 echo SLURM_NTASKS_PER_NODE: $SLURM_NTASKS_PER_NODE
@@ -40,10 +41,11 @@ echo 'TASKS_FOR_CLUSTER= '$TASKS_FOR_CLUSTER
 #    --mem-per-cpu $SLURM_MEM_PER_CPU \
 #    python ./inc_dask.py &
 
+#--mem-per-cpu $SLURM_MEM_PER_CPU \
 #Reserved Ports Version
 srun -n $SLURM_NTASKS \
     -c $SLURM_CPUS_PER_TASK \
-    --mem-per-cpu $SLURM_MEM_PER_CPU \
+    --mem=$MEMORY_PER_TASK \
 	--resv-ports=$TASKS_FOR_CLUSTER -l \
     ./wraper.sh
     #python ./dask_cluster_resvports.py -local $LUSTRE_SCRATCH --dask_cluster 

@@ -99,6 +99,8 @@ def launch_scheduler(scheduler_file=None, preload=None):
 
     dask_scheduler = "dask-scheduler --dashboard --interface ib0" \
         " --scheduler-file {}".format(scheduler_file)
+    #dask_scheduler = "dask-scheduler --dashboard --dashboard-address 36015 --interface ib0" \
+    #    " --scheduler-file {}".format(scheduler_file)
     if port_list is not None:
         print(port_list[local_id])
         dask_scheduler = dask_scheduler + " --port {}".format(port_list[local_id])

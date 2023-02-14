@@ -7,6 +7,7 @@
 
 # SBATCH --ntasks-per-node=4
 
+MEMORY_PER_TASK=$(( $SLURM_CPUS_PER_TASK*$SLURM_MEM_PER_CPU ))
 # Number of tasks 
 echo SLURM_NTASKS: $SLURM_NTASKS  
 echo SLURM_NTASKS_PER_NODE: $SLURM_NTASKS_PER_NODE
@@ -29,9 +30,10 @@ module load cesga/2020 gcc/system openmpi/4.0.5_ft3_cuda dask/2022.2.0
 #Cambia el fichero con la info del scheduler si fuera menester
 SCHED_FILE="./scheduler_info.json"
 
+#--mem-per-cpu $SLURM_MEM_PER_CPU \
 srun -n $SLURM_NTASKS \
     -c $SLURM_CPUS_PER_TASK \
-    --mem-per-cpu $SLURM_MEM_PER_CPU \
+    --mem=$MEMORY_PER_TASK \
 	--resv-ports=$SLURM_NTASKS -l \
     python ./dask_cluster.py \
         -local $LUSTRE_SCRATCH \
