@@ -2,6 +2,7 @@
 
 #SBATCH -n 4 # Number of tasks 
 #SBATCH -c 1 # Total number of core for one task
+# SBATCH -C clk #For submit to clk
 #SBATCH --mem-per-cpu=3G
 #SBATCH -t 00:10:00
 
@@ -39,5 +40,6 @@ srun -n $SLURM_NTASKS \
         -local $LUSTRE_SCRATCH \
         --worker \
         -scheduler_file $SCHED_FILE \
+        --ib \
         #-preload  ./PreLoad.py
 

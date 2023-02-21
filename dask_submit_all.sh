@@ -2,6 +2,7 @@
 
 #SBATCH -n 6 # Number of tasks 
 #SBATCH -c 1 # Total number of core for one task
+# SBATCH -C clk #For submit to clk
 #SBATCH --mem-per-cpu=3G
 #SBATCH -t 00:10:00
 

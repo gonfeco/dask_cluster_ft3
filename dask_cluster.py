@@ -65,7 +65,7 @@ def look_in_environment(environment_variable):
         raise KeyError
     return value_variable
 
-def launch_scheduler(scheduler_file=None, preload=None):
+def launch_scheduler(scheduler_file=None, preload=None, ib=None):
     """
     Lanza el scheduler del cluster
 
@@ -76,6 +76,7 @@ def launch_scheduler(scheduler_file=None, preload=None):
         informacion
     preload : path del script python que se le pasa al scheduler para
         que tenga todos los modulos necesarios para su ejecución
+    ib : boolean. Para usar la InfiniBand
 
     Returns
     ----------
@@ -97,7 +98,7 @@ def launch_scheduler(scheduler_file=None, preload=None):
         port_list = None
     local_id = int(look_in_environment("SLURM_LOCALID"))
 
-    dask_scheduler = "dask-scheduler --dashboard --interface ib0" \
+    dask_scheduler = "dask-scheduler --dashboard" \
         " --scheduler-file {}".format(scheduler_file)
     #dask_scheduler = "dask-scheduler --dashboard --dashboard-address 36015 --interface ib0" \
     #    " --scheduler-file {}".format(scheduler_file)
@@ -106,6 +107,8 @@ def launch_scheduler(scheduler_file=None, preload=None):
         dask_scheduler = dask_scheduler + " --port {}".format(port_list[local_id])
     if preload is not None:
         dask_scheduler = dask_scheduler + " --preload {}".format(preload)
+    if ib == True:
+        dask_scheduler = dask_scheduler + " --interface ib0"
     print('Command line to create Scheduler: {}'.format(dask_scheduler))
     #Lanzamos el comado que monta el Scheduler
     process = subprocess.run(dask_scheduler.split(), stdout=subprocess.PIPE)
@@ -115,6 +118,7 @@ def launch_worker(
         scheduler_file=None,
         scheduler_address=None,
         local_folder='/tmp',
+        ib=None,
         preload=None
     ):
     """
@@ -128,6 +132,7 @@ def launch_worker(
         proporciona un scheduler_file.
     preload : path del script python que se le pasa al worker para
         que tenga todos los modulos necesarios para su ejecución
+    ib : boolean. Para usar la InfiniBand
 
     """
     try:
@@ -138,8 +143,10 @@ def launch_worker(
         ports = None
         port_list = None
     local_id = int(look_in_environment("SLURM_LOCALID"))
-    worker = "dask-worker  --interface ib0 --no-nanny --nthreads 1" \
+    worker = "dask-worker  --no-nanny --nthreads 1" \
         " --local-directory {}".format(local_folder)
+    #worker = "dask-worker  --interface ib0 --no-nanny --nthreads 1" \
+    #    " --local-directory {}".format(local_folder)
 
     if port_list is not None:
         print(port_list[local_id])
@@ -157,6 +164,8 @@ def launch_worker(
         )
     else:
         raise ValueError('No tengo direccion del scheduler')
+    if ib == True:
+        worker = worker + " --interface ib0"
     if preload is not None:
         worker = worker + " --preload {}".format(preload)
     print('Command line to create worker: {}'.format(worker))
@@ -268,6 +277,13 @@ if __name__ == "__main__":
         default=None,#"./scheduler_info.json",
         help="File name for json file with the scheduler info",
     )
+    parser.add_argument(
+        "--ib",
+        dest="ib",
+        default=False,
+        action="store_true",
+        help="For using InfiniBand",
+    )
     #parser.add_argument(
     #    "--client",
     #    dest="client",
@@ -282,18 +298,21 @@ if __name__ == "__main__":
         help="File for preload code in dask scheduler and workers."
     )
     FLAGS, unparsed = parser.parse_known_args()
+    print(FLAGS)
 
     if FLAGS.scheduler:
         scheduler_dask = launch_scheduler(
             scheduler_file=FLAGS.scheduler_file,
-            preload=FLAGS.preload
+            preload=FLAGS.preload,
+            ib=FLAGS.ib
         )
     if FLAGS.worker:
         worker_dask = launch_worker(
             scheduler_file=FLAGS.scheduler_file,
             scheduler_address=FLAGS.scheduler_address,
             local_folder=FLAGS.local,
-            preload=FLAGS.preload
+            preload=FLAGS.preload,
+            ib=FLAGS.ib
         )
 
 
@@ -315,7 +334,8 @@ if __name__ == "__main__":
         if final_id == 0:
             scheduler_dask = launch_scheduler(
                 scheduler_file=FLAGS.scheduler_file,
-                preload=FLAGS.preload
+                preload=FLAGS.preload,
+                ib=FLAGS.ib
             )
         else:
             if FLAGS.scheduler_file is None:
@@ -332,5 +352,6 @@ if __name__ == "__main__":
             worker_dask = launch_worker(
                 scheduler_file=scheduler_file,
                 local_folder=FLAGS.local,
-                preload=FLAGS.preload
+                preload=FLAGS.preload,
+                ib=FLAGS.ib
             )

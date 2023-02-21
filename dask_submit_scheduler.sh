@@ -2,6 +2,7 @@
 
 #SBATCH -n 1 # Number of tasks 
 #SBATCH -c 1 # Total number of core for one task
+# SBATCH -C clk #For submit to clk
 #SBATCH --mem-per-cpu=3G
 #SBATCH -t 00:20:00
 
@@ -39,6 +40,7 @@ srun -n $SLURM_NTASKS \
     python ./dask_cluster.py \
         -local $LUSTRE_SCRATCH \
         --scheduler \
+        --ib \
         #-scheduler_file $SCHED_FILE \
         #-preload  ./PreLoad.py
 

@@ -18,6 +18,7 @@ else
     python ./dask_cluster.py \
         -local $LUSTRE_SCRATCH \
         --dask_cluster \
+        --ib \
         #-scheduler_file $SCHED_FILE \
         #-preload  ./PreLoad.py
 
