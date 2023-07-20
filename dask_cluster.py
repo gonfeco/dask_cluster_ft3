@@ -5,6 +5,26 @@ import subprocess
 import os
 import time
 import json
+from numpy.random import randint
+
+def random_port(port_list):
+    """
+    Genera un numero aleatorio entre 1 y 65535 que no este en la lista
+    de entrada ni en una lista interna de puertos
+    """
+    port_list_add = [80, 443, 21, 22, 110, 995, 143, 993, 25, 587, 3306, 2082,
+        2083, 2086, 2087, 2095, 2096, 2077, 2078]
+    port_list_add = [str(e_) for e_ in port_list_add]
+    final_port = port_list + port_list_add
+    go = True
+
+    while go:
+        port = str(randint(1, 65535))
+        if port not in final_port:
+            go = False
+    return port
+
+
 
 def nodeset_expand(tira):
     if '-' in tira:
@@ -97,9 +117,12 @@ def launch_scheduler(scheduler_file=None, preload=None, ib=None):
         ports = None
         port_list = None
     local_id = int(look_in_environment("SLURM_LOCALID"))
+    print("Puertos: {}".format(port_list))
 
-    dask_scheduler = "dask-scheduler --dashboard" \
-        " --scheduler-file {}".format(scheduler_file)
+    dashboard_port = random_port(port_list)
+    print('dashboard_port : {}'.format(dashboard_port))
+    dask_scheduler = "dask-scheduler --dashboard --dashboard-address {}" \
+        " --scheduler-file {}".format(dashboard_port, scheduler_file)
     #dask_scheduler = "dask-scheduler --dashboard --dashboard-address 36015 --interface ib0" \
     #    " --scheduler-file {}".format(scheduler_file)
     if port_list is not None:
@@ -148,6 +171,7 @@ def launch_worker(
     #worker = "dask-worker  --interface ib0 --no-nanny --nthreads 1" \
     #    " --local-directory {}".format(local_folder)
 
+    print("Puertos: {}".format(port_list))
     if port_list is not None:
         print(port_list[local_id])
         worker = worker + " --worker-port {}".format(port_list[local_id])
