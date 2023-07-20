@@ -166,8 +166,14 @@ def launch_worker(
         ports = None
         port_list = None
     local_id = int(look_in_environment("SLURM_LOCALID"))
+    # Fixing the memory limit of the worker
+    memory_per_cpu = int(look_in_environment("SLURM_MEM_PER_CPU"))
+    cpu_per_task = int(look_in_environment("SLURM_CPUS_PER_TASK"))
+    mem_per_task = memory_per_cpu * cpu_per_task
+    mem_per_task = str(mem_per_task) + 'M'
     worker = "dask-worker  --no-nanny --nthreads 1" \
-        " --local-directory {}".format(local_folder)
+        " --local-directory {} --memory-limit {}".format(
+            local_folder, mem_per_task)
     #worker = "dask-worker  --interface ib0 --no-nanny --nthreads 1" \
     #    " --local-directory {}".format(local_folder)
 

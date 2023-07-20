@@ -1,12 +1,10 @@
 #!/bin/bash
 
 #SBATCH -n 8 # Number of tasks 
-#SBATCH -c 1 # Total number of core for one task
+#SBATCH -c 4 # Total number of core for one task
 #SBATCH --mem-per-cpu=3G
 # SBATCH -C clk #For submit to clk
-#SBATCH -t 01:00:00
-
-# SBATCH --ntasks-per-node=4
+#SBATCH -t 00:15:00
 
 MEMORY_PER_TASK=$(( $SLURM_CPUS_PER_TASK*$SLURM_MEM_PER_CPU ))
 
@@ -35,12 +33,12 @@ rm -f ssh_command.txt
 
 #SCHED_FILE="./zalo.json"
 
-#--mem-per-cpu $SLURM_MEM_PER_CPU \
+#--mem-per-cpu=$SLURM_MEM_PER_CPU \
 #Reserved Ports Version
 srun -n $SLURM_NTASKS \
     -c $SLURM_CPUS_PER_TASK \
-    --mem=$MEMORY_PER_TASK \
 	--resv-ports=$SLURM_NTASKS -l \
+    --mem=$MEMORY_PER_TASK \
     python ./dask_cluster.py \
         -local $LUSTRE_SCRATCH \
         --dask_cluster \
